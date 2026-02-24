@@ -153,7 +153,7 @@
                 <span class="text-cyan-400 text-2xl">🔒</span>
             </div>
             <div onclick="switchTab('tool-simulator')" class="glass-panel p-10 flex items-center justify-between cursor-pointer border-l-4 border-l-pink-500">
-                <h3 class="text-xl font-orbitron text-white uppercase font-bold tracking-tighter">Simulador de Hackeo Pishing</h3>
+                <h3 class="text-xl font-orbitron text-white uppercase font-bold tracking-tighter">Simulador de Hackeo Phishing</h3>
                 <span class="text-pink-500 text-2xl">⚡</span>
             </div>
             <div onclick="switchTab('tool-theory')" class="glass-panel p-10 flex items-center justify-between cursor-pointer border-l-4 border-l-white">
@@ -375,7 +375,7 @@
             }
         }
 
-        // Lógica Netflix (BUG FIXED)
+        // Lógica Netflix
         function validateNetflixForm() {
             if (document.getElementById('alert-modal').style.display === 'flex') return;
 
@@ -402,7 +402,6 @@
         }
         
         function closeModal() { 
-            // Limpia los datos al cerrar para evitar bucles
             document.getElementById('netflix-user').value = "";
             document.getElementById('netflix-pass').value = "";
             document.getElementById('alert-modal').style.display = 'none'; 
@@ -434,7 +433,7 @@
             }, 3000);
         }
 
-        // MITM
+        // MITM Simulation
         function startMitmSim() {
             const log = document.getElementById('mitm-log');
             const flow = document.getElementById('packet-flow');
@@ -464,7 +463,7 @@
             }, 1200);
         }
 
-        // IA URL Analizador (Optimizado para que no esté vacío)
+        // IA URL Analizador
         async function analyzeUrlAdvanced() {
             const url = document.getElementById('url-input').value.trim();
             const resultDiv = document.getElementById('verifier-result');
@@ -473,7 +472,7 @@
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `URL: ${url}` }] }], systemInstruction: { parts: [{ text: "Analiza Phishing o Seguro. Responde JSON: {status: 'safe'|'danger'|'warning', reason: 'explicación técnica corta'}" }] }, generationConfig: { responseMimeType: "application/json" } })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `URL: ${url}` }] }], systemInstruction: { parts: [{ text: "Analiza Phishing o Seguro. Responde JSON: {status: 'safe'|'danger'|'warning', reason: 'explicación técnica corta en español'}" }] }, generationConfig: { responseMimeType: "application/json" } })
                 });
                 const data = JSON.parse((await res.json()).candidates[0].content.parts[0].text);
                 const map = { safe: {t:'SITIO SEGURO', c:'text-cyan-400', bg:'bg-cyan-400/5'}, danger: {t:'PELIGRO DETECTADO', c:'text-pink-500', bg:'bg-pink-500/5'}, warning: {t:'AVISO DE SEGURIDAD', c:'text-yellow-500', bg:'bg-yellow-500/5'} };
