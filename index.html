@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YDX Academy | Hub de Seguridad</title>
+    <!-- Fuentes: Orbitron para títulos, Rajdhani para cuerpo y Space Mono para datos -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-pink: #ff007f;
+            --dark-bg: #050505;
+            --netflix-red: #e50914;
+            --netflix-error: #e87c03;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image: radial-gradient(circle at center, #111 0%, #050505 100%);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .font-mono-tech { font-family: 'Space Mono', monospace; }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 242, 255, 0.1);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-panel:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .neon-text {
+            background: linear-gradient(to right, var(--neon-pink), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 12px rgba(255, 0, 127, 0.5));
+        }
+
+        /* Netflix Simulation */
+        .btn-netflix { background-color: var(--netflix-red); transition: background 0.3s; }
+        .btn-netflix:hover { background-color: #c11119; }
+        .error-text { color: var(--netflix-error); font-size: 13px; margin-top: 6px; display: none; text-align: left; }
+        .input-error-border { border-bottom: 2px solid var(--netflix-error) !important; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slideUp 0.5s ease-out; }
+
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        #alert-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .hacking-alert { 
+            border: 2px solid var(--neon-pink); 
+            animation: pulse-border 2s infinite; 
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 127, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 0, 127, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 127, 0); }
+        }
+
+        .visual-packet {
+            width: 12px; height: 12px; background: var(--neon-cyan);
+            border-radius: 50%; position: absolute; box-shadow: 0 0 15px var(--neon-cyan);
+        }
+        .animate-intercept { animation: moveIntercept 2.5s infinite linear; }
+        @keyframes moveIntercept {
+            0% { left: 10%; opacity: 0; }
+            50% { left: 50%; background: var(--neon-pink); }
+            100% { left: 90%; opacity: 0; }
+        }
+
+        .loader {
+            border: 4px solid rgba(0, 242, 255, 0.1);
+            border-left-color: var(--neon-cyan);
+            border-radius: 50%;
+            width: 45px; height: 45px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .fake-browser-bar {
+            background: #2b2b2b; border-top-left-radius: 8px; border-top-right-radius: 8px;
+            padding: 8px 12px; display: flex; align-items: center; gap: 12px; border: 1px solid #444;
+        }
+        .url-field {
+            background: #141414; border-radius: 15px; padding: 4px 12px; flex-grow: 1;
+            font-family: 'Space Mono', monospace; font-size: 11px; color: #888; border: 1px solid #333;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center">
+
+    <!-- Header -->
+    <header class="w-full py-16 text-center cursor-pointer" onclick="switchTab('home')">
+        <h1 class="text-7xl font-black font-orbitron neon-text tracking-tighter uppercase">YDX ACADEMY</h1>
+        <p class="text-cyan-400 font-orbitron text-sm tracking-[0.8rem] mt-4 uppercase opacity-80">SISTEMA DE DEFENSA CIBERNÉTICA ÉLITE</p>
+    </header>
+
+    <!-- MENÚ PRINCIPAL -->
+    <main id="home" class="tab-content active w-full max-w-6xl px-6 py-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div onclick="switchTab('phishing-menu')" class="glass-panel p-12 text-center cursor-pointer group hover:border-neon-pink">
+                <h2 class="text-2xl font-orbitron text-cyan-400 mb-6 uppercase font-black">Seguridad Phishing</h2>
+                <p class="text-gray-400 text-lg">Aprende a identificar trampas visuales y suplantación de identidad en la web.</p>
+            </div>
+            <div onclick="switchTab('networks-menu')" class="glass-panel p-12 text-center cursor-pointer group hover:border-neon-cyan">
+                <h2 class="text-2xl font-orbitron text-pink-500 mb-6 uppercase font-black">Seguridad de Redes</h2>
+                <p class="text-gray-400 text-lg">Auditoría de conexiones, búsqueda de puertos abiertos y simulacros MITM.</p>
+            </div>
+            <div class="glass-panel p-12 text-center opacity-30 grayscale cursor-not-allowed">
+                <h2 class="text-2xl font-orbitron text-white mb-6 uppercase font-black">Cloud Defense</h2>
+                <p class="text-gray-500 text-lg">Próximamente: Protección de infraestructura y gestión de dominios Pro.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==========================================
+         SUB-MENÚ: SEGURIDAD PHISHING
+         ========================================== -->
+    <section id="phishing-menu" class="tab-content w-full max-w-4xl px-6 py-10">
+        <button onclick="switchTab('home')" class="mb-10 text-cyan-400 font-orbitron text-xs uppercase hover:tracking-widest transition-all">← REGRESAR AL INICIO</button>
+        <div class="grid grid-cols-1 gap-6">
+            <div onclick="switchTab('tool-verifier')" class="glass-panel p-10 flex items-center justify-between cursor-pointer border-l-4 border-l-cyan-400">
+                <h3 class="text-xl font-orbitron text-white uppercase font-bold tracking-tighter">Analizador de URLs</h3>
+                <span class="text-cyan-400 text-2xl">🔒</span>
+            </div>
+            <div onclick="switchTab('tool-simulator')" class="glass-panel p-10 flex items-center justify-between cursor-pointer border-l-4 border-l-pink-500">
+                <h3 class="text-xl font-orbitron text-white uppercase font-bold tracking-tighter">Simulador de Hackeo Pishing</h3>
+                <span class="text-pink-500 text-2xl">⚡</span>
+            </div>
+            <div onclick="switchTab('tool-theory')" class="glass-panel p-10 flex items-center justify-between cursor-pointer border-l-4 border-l-white">
+                <h3 class="text-xl font-orbitron text-white uppercase font-bold tracking-tighter">¿Qué es el PHISHING y como evitarlo?</h3>
+                <span class="text-white text-2xl">📚</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Phishing: Analizador -->
+    <section id="tool-verifier" class="tab-content w-full max-w-2xl px-6 py-10">
+        <button onclick="switchTab('phishing-menu')" class="mb-8 text-cyan-400 font-orbitron text-xs uppercase hover:underline">← VOLVER</button>
+        <div class="glass-panel p-10">
+            <h3 class="text-2xl font-orbitron text-cyan-400 mb-8 text-center uppercase font-black tracking-widest">Escáner de Integridad Web</h3>
+            <p class="text-gray-400 mb-8 text-center font-rajdhani text-lg leading-snug">Ingresa un enlace sospechoso. Nuestro motor comparará la dirección con dominios oficiales para detectar fraudes.</p>
+            <input type="text" id="url-input" placeholder="Ej: https://netflix-pago.com" class="w-full p-5 bg-black/50 border border-gray-800 rounded-xl text-cyan-400 mb-6 focus:outline-none focus:border-cyan-400 font-mono-tech text-sm">
+            <button onclick="analyzeUrlAdvanced()" class="w-full py-5 bg-cyan-400 text-black font-black font-orbitron rounded-xl uppercase tracking-widest shadow-lg">Iniciar Análisis de URL</button>
+            <div id="verifier-result" class="mt-10 p-8 rounded-2xl text-center min-h-[150px] flex flex-col justify-center items-center bg-black/40 border border-white/5">
+                <p class="text-gray-600 italic">Sistema listo para recibir datos...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Phishing: Simulador Netflix -->
+    <section id="tool-simulator" class="tab-content w-full max-w-5xl px-6 py-10">
+        <button onclick="switchTab('phishing-menu')" class="mb-8 text-pink-500 font-orbitron text-xs uppercase hover:underline">← VOLVER</button>
+        <div class="max-w-md mx-auto">
+            <div class="fake-browser-bar">
+                <div class="flex gap-2">
+                    <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                    <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                    <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+                </div>
+                <div class="url-field">
+                    <span class="mr-2 text-green-500 text-[10px]">🔒</span>
+                    <span class="text-white opacity-40">https://</span><span class="text-white">netflx.com/es/login</span>
+                </div>
+            </div>
+            <div class="w-full bg-[#000] p-10 md:p-14 shadow-2xl relative border border-gray-800 border-t-0 rounded-b-xl">
+                <div class="mb-10 text-left">
+                    <svg viewBox="0 0 111 30" version="1.1" xmlns="http://www.w3.org/2000/svg" class="w-32 h-auto">
+                        <path fill="#e50914" d="M105.06233,14.2806261 L110.999156,30 C109.249227,29.7497422 107.500234,29.4366857 105.718437,29.1554972 L102.374168,20.4686475 L98.9371075,28.4375293 C97.2499766,28.1563408 95.5928391,28.061674 93.9057081,27.8432843 L99.9372012,14.0931671 L94.4680851,-5.68434189e-14 L99.5313525,-5.68434189e-14 L102.593495,7.87421502 L105.874965,-5.68434189e-14 L110.999156,-5.68434189e-14 L105.06233,14.2806261 Z M90.4686475,-5.68434189e-14 L85.8749649,-5.68434189e-14 L85.8749649,27.2499766 C87.3746368,27.3437061 88.9371075,27.4055675 90.4686475,27.5930265 L90.4686475,-5.68434189e-14 Z M81.9055207,26.93692 C77.7186241,26.6557316 73.5307901,26.4064111 69.250164,26.3117443 L69.250164,-5.68434189e-14 L73.9366389,-5.68434189e-14 L73.9366389,21.8745899 C76.6248008,21.9373887 79.3120255,22.1557784 81.9055207,22.2804387 L81.9055207,26.93692 Z M64.2496954,10.6561065 L64.2496954,15.3435186 L57.8442216,15.3435186 L57.8442216,25.9996251 L53.2186709,25.9996251 L53.2186709,-5.68434189e-14 L66.3436123,-5.68434189e-14 L66.3436123,4.68741213 L57.8442216,4.68741213 L57.8442216,10.6561065 L64.2496954,10.6561065 Z M45.3435186,4.68741213 L45.3435186,26.2498828 C43.7810479,26.2498828 42.1876465,26.2498828 40.6561065,26.3117443 L40.6561065,4.68741213 L35.8121661,4.68741213 L35.8121661,-5.68434189e-14 L50.2183897,-5.68434189e-14 L50.2183897,4.68741213 L45.3435186,4.68741213 Z M30.749836,15.5928391 C28.687787,15.5928391 26.2498828,15.5928391 24.4999531,15.6875059 L24.4999531,22.6562939 C27.2499766,22.4678976 30,22.2495079 32.7809542,22.1557784 L32.7809542,26.6557316 L19.812541,27.6876933 L19.812541,-5.68434189e-14 L32.7809542,-5.68434189e-14 L32.7809542,4.68741213 L24.4999531,4.68741213 L24.4999531,10.9991564 C26.3126816,10.9991564 29.0936358,10.9054269 30.749836,10.9054269 L30.749836,15.5928391 Z M4.78114163,12.9684132 L4.78114163,29.3429562 C3.09401069,29.5313525 1.59340144,29.7497422 0,30 L0,-5.68434189e-14 L4.4690224,-5.68434189e-14 L10.562377,17.0315868 L10.562377,-5.68434189e-14 L15.2497891,-5.68434189e-14 L15.2497891,28.061674 C13.5935889,28.3437998 11.906458,28.4375293 10.1246602,28.6868498 L4.78114163,12.9684132 Z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl text-white font-bold mb-8 text-left font-sans">Iniciar sesión</h2>
+                <div class="space-y-6 text-left font-sans">
+                    <div>
+                        <input type="text" id="netflix-user" placeholder="Email o número de teléfono" class="w-full p-4 bg-[#333] border-none rounded text-white focus:outline-none focus:bg-[#444] transition-all">
+                        <p id="error-user" class="error-text">Ingrese un correo o número válido.</p>
+                    </div>
+                    <div>
+                        <input type="password" id="netflix-pass" placeholder="Contraseña" class="w-full p-4 bg-[#333] border-none rounded text-white focus:outline-none focus:bg-[#444] transition-all">
+                        <p id="error-pass" class="error-text">La contraseña debe tener entre 4 y 60 caracteres.</p>
+                    </div>
+                    <button onclick="validateNetflixForm()" class="w-full btn-netflix py-4 text-white font-bold rounded mt-6 text-lg uppercase tracking-wide">Iniciar sesión</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Phishing: Teoría -->
+    <section id="tool-theory" class="tab-content w-full max-w-4xl px-6 py-10">
+        <button onclick="switchTab('phishing-menu')" class="mb-10 text-white font-orbitron text-xs uppercase hover:underline">← VOLVER</button>
+        <div class="glass-panel p-10 space-y-12">
+            <h3 class="text-4xl font-orbitron text-neon-cyan border-b border-white/10 pb-6 uppercase font-black italic tracking-tighter">¿Qué es el PHISHING y como evitarlo?</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-300 font-rajdhani">
+                <div class="bg-white/5 p-8 rounded-2xl border border-white/5">
+                    <h4 class="text-pink-500 font-bold font-orbitron mb-4 uppercase text-sm tracking-widest">Identifica el Dominio</h4>
+                    <p class="leading-relaxed">Es el nombre real de la web. En <code class="text-cyan-400">netflix.com</code>, el dominio es "netflix". Los atacantes usan nombres parecidos para engañar al ojo rápido (como <code class="text-white">netflx</code> sin la "i").</p>
+                </div>
+                <div class="bg-white/5 p-8 rounded-2xl border border-white/5">
+                    <h4 class="text-pink-500 font-bold font-orbitron mb-4 uppercase text-sm tracking-widest">El TLD (Terminación)</h4>
+                    <p class="leading-relaxed">Letras como <code class="text-cyan-400">.com</code> o <code class="text-cyan-400">.pe</code>. Los estafadores aman las terminaciones raras como <code class="text-yellow-500">.xyz</code> o <code class="text-yellow-500">.top</code> porque son baratas de registrar.</p>
+                </div>
+                <div class="bg-white/5 p-8 rounded-2xl border border-white/5">
+                    <h4 class="text-pink-500 font-bold font-orbitron mb-4 uppercase text-sm tracking-widest">Urgencia Artificial</h4>
+                    <p class="leading-relaxed">"Tu cuenta será cerrada en 2h". Los hackers usan el miedo para que actúes sin pensar ni revisar la URL de arriba.</p>
+                </div>
+                <div class="bg-white/5 p-8 rounded-2xl border border-white/5">
+                    <h4 class="text-pink-500 font-bold font-orbitron mb-4 uppercase text-sm tracking-widest">El Mito del Candado</h4>
+                    <p class="leading-relaxed">El candado (HTTPS) solo significa que la conexión está cifrada, no que el sitio sea oficial. El 90% de los sitios falsos hoy tienen candado.</p>
+                </div>
+            </div>
+            <div class="bg-cyan-400/5 border border-cyan-400/20 p-8 rounded-2xl">
+                <h4 class="text-cyan-400 font-bold font-orbitron mb-4 uppercase text-sm tracking-widest">¿URL Segura pero no puedo entrar?</h4>
+                <div class="space-y-4 text-gray-300 text-sm">
+                    <p>A veces el analizador marca <strong>SEGURO</strong> (color cian) pero al intentar entrar el navegador te da error. Esto pasa por:</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-400">
+                        <li><strong class="text-white">Dominio Reservado:</strong> El nombre existe pero no tiene una web instalada (ej: <code class="text-white">y.com</code>).</li>
+                        <li><strong class="text-white">Servidor Caído:</strong> La dirección es real y segura, pero la computadora donde vive la web está apagada.</li>
+                        <li><strong class="text-white">Bloqueo de Red:</strong> Tu Wi-Fi bloquea ciertos dominios legítimos por políticas internas.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         SUB-MENÚ: SEGURIDAD DE REDES
+         ========================================== -->
+    <section id="networks-menu" class="tab-content w-full max-w-4xl px-6 py-10">
+        <button onclick="switchTab('home')" class="mb-10 text-pink-500 font-orbitron text-xs uppercase hover:underline">← REGRESAR AL INICIO</button>
+        <div class="grid grid-cols-1 gap-6">
+            <div onclick="switchTab('net-tool-scanner')" class="glass-panel p-10 flex items-center justify-between cursor-pointer border-l-4 border-l-cyan-400">
+                <h3 class="text-xl font-orbitron text-white uppercase font-bold tracking-tighter">Buscador de Puertas Abiertas</h3>
+                <span class="text-cyan-400 text-3xl">📡</span>
+            </div>
+            <div onclick="switchTab('net-tool-mitm')" class="glass-panel p-10 flex items-center justify-between cursor-pointer border-l-4 border-l-pink-500">
+                <h3 class="text-xl font-orbitron text-white uppercase font-bold tracking-tighter">Escucha de Tráfico (MITM)</h3>
+                <span class="text-pink-500 text-3xl">🕵️</span>
+            </div>
+            <div onclick="switchTab('net-tool-theory')" class="glass-panel p-10 flex items-center justify-between cursor-pointer border-l-4 border-l-white">
+                <h3 class="text-xl font-orbitron text-white uppercase font-bold tracking-tighter">Guía de Blindaje Wi-Fi</h3>
+                <span class="text-white text-3xl">🛡️</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Redes: Escáner -->
+    <section id="net-tool-scanner" class="tab-content w-full max-w-2xl px-6 py-10">
+        <button onclick="switchTab('networks-menu')" class="mb-8 text-pink-500 font-orbitron text-xs uppercase hover:underline">← VOLVER</button>
+        <div class="glass-panel p-10">
+            <h3 class="text-2xl font-orbitron text-pink-500 mb-8 text-center uppercase font-black italic tracking-widest">Análisis de Vulnerabilidad IP</h3>
+            <p class="text-gray-400 mb-8 text-center font-rajdhani text-lg leading-snug">Busca servicios expuestos en tu red. Un puerto abierto es como dejar la ventana de tu casa abierta.</p>
+            <input type="text" id="ip-input" placeholder="Ej: 192.168.1.1" class="w-full p-5 bg-black/50 border border-gray-800 rounded-xl text-pink-500 mb-6 focus:outline-none focus:border-pink-500 font-mono-tech">
+            <button id="scan-btn" onclick="runNetworkScan()" class="w-full py-5 bg-pink-500 text-black font-black font-orbitron rounded-xl uppercase tracking-widest hover:bg-pink-400 shadow-lg">Iniciar Escaneo Táctico</button>
+            <div id="scan-result" class="mt-10 p-8 rounded-2xl min-h-[180px] flex flex-col items-center bg-black/60 border border-white/5 font-mono-tech text-xs">
+                <p class="text-gray-600 uppercase italic">Aguardando secuencia...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Redes: MITM Simulator -->
+    <section id="net-tool-mitm" class="tab-content w-full max-w-4xl px-6 py-10">
+        <button onclick="switchTab('networks-menu')" class="mb-8 text-pink-500 font-orbitron text-xs uppercase hover:underline">← VOLVER</button>
+        <div class="glass-panel p-10 text-center">
+            <h3 class="text-2xl font-orbitron text-pink-500 mb-8 uppercase font-black tracking-tighter">Interceptación de Datos Invisible</h3>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-10 py-12 relative">
+                <div class="flex flex-col items-center z-10"><span class="text-7xl mb-3">📱</span><p class="text-xs font-bold uppercase tracking-widest text-gray-500">Víctima</p></div>
+                <div id="mitm-attacker" class="flex flex-col items-center border-2 border-pink-500 p-10 rounded-[40px] bg-black/90 relative z-20">
+                    <span class="text-7xl mb-3">🕵️</span><p class="text-pink-500 font-black uppercase text-xs tracking-[0.2rem]">Sniffer YDX</p>
+                    <div id="packet-flow" class="absolute -top-14 text-cyan-400 font-mono-tech text-[10px] hidden p-3 border border-cyan-400/30 rounded-lg bg-black shadow-[0_0_15px_rgba(0,242,255,0.2)]">CAPTURA: {token: "29x...f1"}</div>
+                </div>
+                <div class="flex flex-col items-center z-10"><span class="text-7xl mb-3">☁️</span><p class="text-xs font-bold uppercase tracking-widest text-gray-500">Internet</p></div>
+                <div id="visual-packet" class="visual-packet hidden"></div>
+            </div>
+            <button onclick="startMitmSim()" class="bg-pink-500 text-black px-14 py-5 rounded-2xl font-black font-orbitron uppercase tracking-widest hover:scale-105 mt-10 shadow-lg">Activar Escucha MITM</button>
+            <div id="mitm-log" class="mt-12 p-8 bg-black rounded-2xl font-mono-tech text-[10px] text-green-500 text-left h-52 overflow-y-auto border border-white/5 shadow-inner">
+                > MÓDULO DE ESCUCHA INICIALIZADO...
+            </div>
+        </div>
+    </section>
+
+    <!-- Redes: Teoría Blindaje -->
+    <section id="net-tool-theory" class="tab-content w-full max-w-4xl px-6 py-10">
+        <button onclick="switchTab('networks-menu')" class="mb-10 text-white font-orbitron text-xs uppercase hover:underline">← VOLVER</button>
+        <div class="glass-panel p-10 space-y-12 font-rajdhani">
+            <h3 class="text-3xl font-orbitron text-pink-500 border-b border-white/10 pb-6 uppercase font-black italic tracking-tighter">Estrategias de Blindaje Wi-Fi</h3>
+            <div class="grid grid-cols-1 gap-12 text-gray-300">
+                <div class="flex gap-10 items-start">
+                    <div class="text-cyan-400 text-5xl font-orbitron font-black opacity-40">01</div>
+                    <div>
+                        <h4 class="text-white font-bold uppercase text-xl mb-3">Apagar el Botón WPS</h4>
+                        <p class="leading-relaxed text-lg">Es el punto más débil de un router. El PIN de 8 dígitos se adivina en minutos con ataques automáticos. Desactívalo de inmediato en tu panel de control.</p>
+                    </div>
+                </div>
+                <div class="flex gap-10 items-start">
+                    <div class="text-pink-500 text-5xl font-orbitron font-black opacity-40">02</div>
+                    <div>
+                        <h4 class="text-white font-bold uppercase text-xl mb-3">Cifrado WPA3 / WPA2-AES</h4>
+                        <p class="leading-relaxed text-lg">Evita WEP o TKIP; son obsoletos. El "Handshake" (apretón de manos) de estas redes se captura y descifra en segundos por fuerza bruta.</p>
+                    </div>
+                </div>
+                <div class="flex gap-10 items-start">
+                    <div class="text-white text-5xl font-orbitron font-black opacity-40">03</div>
+                    <div>
+                        <h4 class="text-white font-bold uppercase text-xl mb-3">Filtrado MAC Activo</h4>
+                        <p class="leading-relaxed text-lg">Configura una "Lista Blanca" de dispositivos autorizados. Aunque un extraño consiga tu clave, el router le impedirá el acceso físico.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL DE HACKEO -->
+    <div id="alert-modal">
+        <div class="hacking-alert bg-black p-10 md:p-14 rounded-[40px] max-w-2xl w-full mx-4 text-center shadow-2xl border-2 border-pink-500">
+            <div class="text-pink-500 text-7xl mb-8">⚠️</div>
+            <h1 class="text-4xl md:text-5xl font-black font-orbitron text-pink-500 mb-6 uppercase tracking-tighter">¡HAS SIDO HACKEADO!</h1>
+            <p class="text-xl text-white mb-8 leading-relaxed font-rajdhani">
+                ¡No te asustes! Tus datos están seguros. Esta es una <b>simulación educativa</b> de YDX Academy.
+            </p>
+            <div class="bg-pink-500/10 border border-pink-500/30 p-10 rounded-3xl text-left mb-10 space-y-6 font-rajdhani">
+                <p class="text-cyan-400 font-black uppercase text-xs font-orbitron border-b border-white/10 pb-3 tracking-widest">Análisis de la simulación:</p>
+                <div class="space-y-4 text-gray-300 text-lg">
+                    <p><b class="text-pink-500">1. URL Trampa:</b> Entraste a <span class="text-white font-mono">netflx.com</span>. El cerebro ignoró la letra faltante por el diseño idéntico.</p>
+                    <p><b class="text-pink-500">2. Intercepción:</b> Al presionar "Iniciar sesión", tus datos se enviaron a nuestro servidor de prueba, no a Netflix oficial.</p>
+                    <p><b class="text-pink-500">3. Prevención:</b> Revisa siempre el dominio letra por letra antes de escribir cualquier credencial importante.</p>
+                </div>
+            </div>
+            <button onclick="closeModal()" class="w-full py-5 bg-cyan-400 text-black font-black font-orbitron rounded-2xl uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,242,255,0.4)]">He aprendido la lección</button>
+        </div>
+    </div>
+
+    <footer class="mt-auto py-12 text-gray-700 text-[10px] font-orbitron tracking-[0.5rem] uppercase text-center w-full opacity-60">
+        Developed by @Gusstream | © 2026 YDX Academy
+    </footer>
+
+    <script>
+        const apiKey = ""; 
+
+        // Navegación
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            const activeTab = document.getElementById(tabId);
+            if(activeTab) {
+                activeTab.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // Lógica Netflix (BUG FIXED)
+        function validateNetflixForm() {
+            if (document.getElementById('alert-modal').style.display === 'flex') return;
+
+            const user = document.getElementById('netflix-user');
+            const pass = document.getElementById('netflix-pass');
+            const eU = document.getElementById('error-user');
+            const eP = document.getElementById('error-pass');
+            let isValid = true;
+
+            [user, pass].forEach(i => i.classList.remove('input-error-border'));
+            [eU, eP].forEach(e => e.style.display = 'none');
+
+            const uVal = user.value.trim();
+            if (uVal.length === 0 || (isNaN(uVal) && !uVal.includes('@'))) {
+                user.classList.add('input-error-border'); eU.style.display = 'block'; isValid = false;
+            }
+            if (pass.value.length < 4) {
+                pass.classList.add('input-error-border'); eP.style.display = 'block'; isValid = false;
+            }
+
+            if (isValid) {
+                document.getElementById('alert-modal').style.display = 'flex';
+            }
+        }
+        
+        function closeModal() { 
+            // Limpia los datos al cerrar para evitar bucles
+            document.getElementById('netflix-user').value = "";
+            document.getElementById('netflix-pass').value = "";
+            document.getElementById('alert-modal').style.display = 'none'; 
+            switchTab('phishing-menu'); 
+        }
+
+        // Escáner IP
+        function runNetworkScan() {
+            const ip = document.getElementById('ip-input').value.trim();
+            const res = document.getElementById('scan-result');
+            const btn = document.getElementById('scan-btn');
+            if(!ip) return;
+            btn.disabled = true;
+            res.innerHTML = `<div class="loader mb-6 mx-auto"></div><p class="text-pink-500 animate-pulse text-center uppercase tracking-widest font-black">Escaneando cerraduras de red en ${ip}...</p>`;
+            
+            setTimeout(() => {
+                res.innerHTML = `
+                <div class="text-left font-mono-tech text-green-400 space-y-3 w-full">
+                    <p class="text-cyan-400 font-black border-b border-cyan-400/20 pb-2 uppercase tracking-widest">Reporte Táctico de Auditoría</p>
+                    <p>> Host detectado: ${ip} (Latencia: 0.0014s)</p>
+                    <p class="text-white mt-6 font-bold">PUERTO      ESTADO      VULNERABILIDAD</p>
+                    <p>22/tcp      <span class="text-pink-500 font-bold">ABIERTO</span>      SSH (Riesgo de fuerza bruta)</p>
+                    <p>80/tcp      <span class="text-pink-500 font-bold">ABIERTO</span>      HTTP (Web no segura)</p>
+                    <div class="mt-8 p-5 bg-pink-500/10 border border-pink-500/30 rounded-xl text-pink-500 font-rajdhani text-base">
+                        <b class="uppercase">ALERTA:</b> Se han detectado "ventanas abiertas" en tu red local. Implementa un Firewall activo de inmediato.
+                    </div>
+                </div>`;
+                btn.disabled = false;
+            }, 3000);
+        }
+
+        // MITM
+        function startMitmSim() {
+            const log = document.getElementById('mitm-log');
+            const flow = document.getElementById('packet-flow');
+            const visual = document.getElementById('visual-packet');
+            flow.classList.remove('hidden');
+            visual.classList.remove('hidden');
+            visual.classList.add('animate-intercept');
+
+            const events = [
+                "> Iniciando Poisoning ARP...",
+                "> Posicionando Proxy Sniffer...",
+                "> Capturando tráfico TCP/IP port 443...",
+                "> Paquete interceptado: [LOGIN_POST_REQ]",
+                "> Datos extraídos con éxito: {user: 'gus_admin', key: '*********'}",
+                "> Reenviando paquete a destino..."
+            ];
+            
+            let i = 0;
+            const interval = setInterval(() => {
+                if(i < events.length) {
+                    log.innerHTML += `<br>[${new Date().toLocaleTimeString()}] ${events[i]}`;
+                    log.scrollTop = log.scrollHeight;
+                    i++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 1200);
+        }
+
+        // IA URL Analizador (Optimizado para que no esté vacío)
+        async function analyzeUrlAdvanced() {
+            const url = document.getElementById('url-input').value.trim();
+            const resultDiv = document.getElementById('verifier-result');
+            if (!url) return;
+            resultDiv.innerHTML = `<div class="loader mb-6"></div><p class="text-cyan-400 font-orbitron animate-pulse uppercase text-[10px] tracking-widest">Analizando reputación web con IA...</p>`;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `URL: ${url}` }] }], systemInstruction: { parts: [{ text: "Analiza Phishing o Seguro. Responde JSON: {status: 'safe'|'danger'|'warning', reason: 'explicación técnica corta'}" }] }, generationConfig: { responseMimeType: "application/json" } })
+                });
+                const data = JSON.parse((await res.json()).candidates[0].content.parts[0].text);
+                const map = { safe: {t:'SITIO SEGURO', c:'text-cyan-400', bg:'bg-cyan-400/5'}, danger: {t:'PELIGRO DETECTADO', c:'text-pink-500', bg:'bg-pink-500/5'}, warning: {t:'AVISO DE SEGURIDAD', c:'text-yellow-500', bg:'bg-yellow-500/5'} };
+                const cfg = map[data.status] || {t:'ERROR', c:'text-gray-400', bg:'bg-black'};
+                resultDiv.innerHTML = `<div class="${cfg.bg} border border-white/10 p-8 rounded-2xl w-full text-left shadow-2xl animate-in zoom-in"><p class="${cfg.c} font-black text-2xl mb-3 uppercase tracking-tighter">${cfg.t}</p><p class="text-gray-300 text-lg font-rajdhani leading-snug">${data.reason}</p></div>`;
+            } catch (e) { resultDiv.innerHTML = `<p class="text-pink-500 font-black uppercase">ERROR DE ENLACE CON NÚCLEO IA.</p>`; }
+        }
+    </script>
+</body>
+</html>
